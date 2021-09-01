@@ -12,6 +12,7 @@ public class IKFootSolver : MonoBehaviour
     [SerializeField] float stepLength = 4;
     [SerializeField] float stepHeight = 1;
     [SerializeField] Vector3 footOffset = default;
+    [SerializeField] Color color;
     float footSpacing;
     Vector3 oldPosition, currentPosition, newPosition;
     Vector3 oldNormal, currentNormal, newNormal;
@@ -64,7 +65,7 @@ public class IKFootSolver : MonoBehaviour
     private void OnDrawGizmos()
     {
 
-        Gizmos.color = Color.blue;
+        Gizmos.color = color;
         Gizmos.DrawSphere(newPosition, 0.5f);
     }
 

@@ -5,37 +5,76 @@ using UnityEngine;
 public class MoveController : MonoBehaviour
 {
 
-    [SerializeField] private Transform Rayposition;
-    [SerializeField]private Transform baseObject;
+    [SerializeField] private Transform leftRayposition;
+    [SerializeField] private Transform rightRayposition;
+    [SerializeField] private Transform leftTargetIK;
+    [SerializeField] private Transform rightTargetIK;
     [SerializeField] private float speed;
     [SerializeField] private float stepDistance;
-    [SerializeField] private float giro;
+    [SerializeField] private float heightDistance;
+    [SerializeField] LayerMask mask;
+
+    private Vector3 leftFootNewPosition = default;
+    private Vector3 rightFootNewPosition = default;
+    private Vector3 leftFootOldPosition = default;
+    private Vector3 rightFootOldPosition = default;
+    private enum foot { right, left};
+    foot actualFoot = foot.right;
     CharacterController controller;
 
     private void Start()
     {
         controller = GetComponent<CharacterController>();
+        leftFootOldPosition = leftRayposition.position;
+        rightFootOldPosition = rightRayposition.position;
+
 
     }
     void FixedUpdate()
     {
-        float rotationX = Input.GetAxis("Horizontal") * giro;
-        float rotationY = Input.GetAxis("Vertical") * giro;
-        baseObject.transform.eulerAngles = new Vector3(rotationX, 0, rotationY);
-        Debug.Log($"{baseObject.transform.rotation}");
-
-
-        if (Physics.Raycast(Rayposition.position, transform.TransformDirection(Vector3.down), out RaycastHit hit))
+        switch (actualFoot)
         {
-            if (Vector3.Distance(transform.position, hit.point) > stepDistance)
-            {
-                Debug.Log($"{Vector3.Distance(transform.position, hit.point)}");
+            case foot.right:
 
-                Vector3 direction = (transform.position - hit.point).normalized;
-                direction.y = 0.5f;
-                controller.Move(direction * Time.deltaTime * -speed);
+                Ray rightRay = new Ray(rightRayposition.position, Vector3.down);
 
-            }
+                if (Physics.Raycast(rightRay, out RaycastHit rightInfo, 10, mask.value))
+                {
+                    if (Vector3.Distance(rightInfo.point, rightFootOldPosition) > stepDistance)
+                    {
+                        rightFootNewPosition = rightInfo.point;
+                    }
+                    rightFootOldPosition = rightFootNewPosition;
+                }
+                break;
+            case foot.left:
+                Ray leftRay = new Ray(leftRayposition.position, Vector3.down);
+
+                if (Physics.Raycast(leftRay, out RaycastHit leftInfo, 10, mask.value))
+                {
+                    if (Vector3.Distance(leftInfo.point, leftFootOldPosition) > stepDistance)
+                    {
+                        leftFootNewPosition = leftInfo.point;
+
+                    }
+                    leftFootOldPosition = leftFootNewPosition;
+
+                }
+                break;
         }
+
+       
+
     }
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawSphere(leftFootNewPosition, 0.5f);
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawSphere(rightFootNewPosition, 0.5f);
+
+    }
+
+
 }
