@@ -9,7 +9,7 @@ public class IKFootSolver : MonoBehaviour
     [SerializeField] IKFootSolver otherFoot = default;
     [SerializeField] float speed = 1;
     [SerializeField] float stepDistance = 4;
-    [SerializeField] float stepLength = 4;
+    [SerializeField] float stepLength = 1;
     [SerializeField] float stepHeight = 1;
     [SerializeField] Vector3 footOffset = default;
     [SerializeField] Color color;
@@ -17,9 +17,11 @@ public class IKFootSolver : MonoBehaviour
     Vector3 oldPosition, currentPosition, newPosition;
     Vector3 oldNormal, currentNormal, newNormal;
     float lerp;
+    static GameObject lastStep;
 
     private void Start()
     {
+        lastStep = GameObject.Find("Right Target");
         footSpacing = transform.localPosition.x;
         currentPosition = newPosition = oldPosition = transform.position;
         currentNormal = newNormal = oldNormal = transform.up;
@@ -33,16 +35,19 @@ public class IKFootSolver : MonoBehaviour
         transform.position = currentPosition;
         transform.up = currentNormal;
 
-        Ray ray = new Ray(body.position + (body.right * footSpacing), Vector3.down);
+        Ray ray = new Ray(body.position, Vector3.down);
 
         if (Physics.Raycast(ray, out RaycastHit info, 100, terrainLayer.value))
         {
-            if (Vector3.Distance(newPosition, info.point) > stepDistance && !otherFoot.IsMoving() && lerp >= 1)
+            if (Vector3.Distance(newPosition, info.point) > stepDistance && !otherFoot.IsMoving() && lerp >= 1 && lastStep != transform.gameObject)
             {
+                Vector3 directionStep = (currentPosition - info.point).normalized;
+                Debug.Log($"direccion del paso {directionStep}");
                 lerp = 0;
                 int direction = body.InverseTransformPoint(info.point).z > body.InverseTransformPoint(newPosition).z ? 1 : -1;
-                newPosition = info.point + (body.forward * stepLength) + footOffset;
+                newPosition = info.point + (directionStep * stepLength);
                 newNormal = info.normal;
+                lastStep = transform.gameObject;
             }
         }
 
