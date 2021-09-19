@@ -11,7 +11,8 @@ public class IKFootSolver : MonoBehaviour
     [SerializeField] float stepDistance = 4;
     [SerializeField] float stepLength = 1;
     [SerializeField] float stepHeight = 1;
-    [SerializeField] Vector3 footOffset = default;
+    [SerializeField] CharacterProperties properties;
+    //[SerializeField] Vector3 footOffset = default;
     [SerializeField] Color color;
     float footSpacing;
     Vector3 oldPosition, currentPosition, newPosition;
@@ -34,15 +35,14 @@ public class IKFootSolver : MonoBehaviour
     {
         transform.position = currentPosition;
         transform.up = currentNormal;
-
+        speed = properties.velocity ;
         Ray ray = new Ray(body.position, Vector3.down);
 
         if (Physics.Raycast(ray, out RaycastHit info, 100, terrainLayer.value))
         {
-            if (Vector3.Distance(newPosition, info.point) > stepDistance && !otherFoot.IsMoving() && lerp >= 1 && lastStep != transform.gameObject)
+            if (Vector3.Distance(newPosition, info.point) > stepDistance && !otherFoot.IsMoving() && lerp >= 1 /*&& lastStep != transform.gameObject*/)
             {
                 Vector3 directionStep = (currentPosition - info.point).normalized;
-                Debug.Log($"direccion del paso {directionStep}");
                 lerp = 0;
                 int direction = body.InverseTransformPoint(info.point).z > body.InverseTransformPoint(newPosition).z ? 1 : -1;
                 newPosition = info.point + (directionStep * stepLength);

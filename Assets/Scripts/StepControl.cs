@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class StepControl : MonoBehaviour
 {
-    public Transform leftTarget; //the Ik target for the feft leg
+    public Transform leftTarget; //the Ik target for the left leg
     public Transform rightTarget; //the Ik target for the right leg
-    public Transform Lray; //the position that a raycast will be sent from to determin where the left foot should go
-    public Transform Rray; //the position that a raycast will be sent from to determin where the left foot should go
+    public Transform Lray; //the position that a raycast will be sent from to determine where the left foot should go
+    public Transform Rray; //the position that a raycast will be sent from to determine where the left foot should go
     public Transform Hips; //the hips or chest
 
     public float LegStepUp; //the level that your leg should go up before you step
