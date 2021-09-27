@@ -7,23 +7,20 @@ public class IKFootSolver : MonoBehaviour
     [SerializeField] LayerMask terrainLayer = default;
     [SerializeField] Transform body = default;
     [SerializeField] IKFootSolver otherFoot = default;
-    [SerializeField] float speed = 1;
-    [SerializeField] float stepDistance = 4;
-    [SerializeField] float stepLength = 1;
-    [SerializeField] float stepHeight = 1;
     [SerializeField] CharacterProperties properties;
     //[SerializeField] Vector3 footOffset = default;
     [SerializeField] Color color;
-    float footSpacing;
+    float speed = 1;
+    float stepDistance = 4;
+    float stepLength = 1;
+    float stepHeight = 1;
+
     Vector3 oldPosition, currentPosition, newPosition;
     Vector3 oldNormal, currentNormal, newNormal;
     float lerp;
-    static GameObject lastStep;
 
     private void Start()
     {
-        lastStep = GameObject.Find("Right Target");
-        footSpacing = transform.localPosition.x;
         currentPosition = newPosition = oldPosition = transform.position;
         currentNormal = newNormal = oldNormal = transform.up;
         lerp = 1;
@@ -31,23 +28,29 @@ public class IKFootSolver : MonoBehaviour
 
     // Update is called once per frame
 
-    void Update()
+    void FixedUpdate()
     {
         transform.position = currentPosition;
         transform.up = currentNormal;
-        speed = properties.velocity ;
+        speed = properties.footVelocity;
+        stepDistance = properties.stepDistance;
+        stepHeight = properties.stepHeight;
+        stepLength = properties.stepLength;
+
         Ray ray = new Ray(body.position, Vector3.down);
 
         if (Physics.Raycast(ray, out RaycastHit info, 100, terrainLayer.value))
         {
-            if (Vector3.Distance(newPosition, info.point) > stepDistance && !otherFoot.IsMoving() && lerp >= 1 /*&& lastStep != transform.gameObject*/)
+            if (Vector3.Distance(newPosition, info.point) > stepDistance && !otherFoot.IsMoving() && lerp >= 1)
             {
-                Vector3 directionStep = (currentPosition - info.point).normalized;
+                Vector3 directionStep = (info.point - currentPosition).normalized;
+
+
                 lerp = 0;
                 int direction = body.InverseTransformPoint(info.point).z > body.InverseTransformPoint(newPosition).z ? 1 : -1;
                 newPosition = info.point + (directionStep * stepLength);
+                Debug.Log($"Posicion paso{transform.name}, {newPosition}");
                 newNormal = info.normal;
-                lastStep = transform.gameObject;
             }
         }
 
@@ -67,11 +70,10 @@ public class IKFootSolver : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmos()
+    void OnDrawGizmos()
     {
-
         Gizmos.color = color;
-        Gizmos.DrawSphere(newPosition, 0.5f);
+        Gizmos.DrawSphere(newPosition, 1f);
     }
 
 

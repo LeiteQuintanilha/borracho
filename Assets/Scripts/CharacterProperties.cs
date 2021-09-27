@@ -6,8 +6,13 @@ using UnityEngine;
 public class CharacterProperties : ScriptableObject
 {
 
-    public ConstantForce force;
     public float forceFactor = 10;
     public float velocity = 1;
+    public Vector3 velocityFactor = Vector3.zero;
+
+    public float footVelocity = 1;
     public float aceleration = 0;
+    public float stepLength = 2;
+    public float stepHeight = 1;
+    public float stepDistance = 1;
 }
