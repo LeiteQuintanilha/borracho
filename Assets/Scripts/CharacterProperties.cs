@@ -15,4 +15,18 @@ public class CharacterProperties : ScriptableObject
     public float stepLength = 2;
     public float stepHeight = 1;
     public float stepDistance = 1;
+
+    [SerializeField]
+    private float twistVelocity;
+    public float TwistVelocity
+    {
+        get { return twistVelocity; }
+    }
+
+    [SerializeField]
+    private float distanceToTwist;
+    public float DistanceToTwist
+    {
+        get { return distanceToTwist; }
+    }
 }

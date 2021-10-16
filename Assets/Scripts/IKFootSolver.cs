@@ -8,8 +8,8 @@ public class IKFootSolver : MonoBehaviour
     [SerializeField] Transform body = default;
     [SerializeField] IKFootSolver otherFoot = default;
     [SerializeField] CharacterProperties properties;
-    //[SerializeField] Vector3 footOffset = default;
     [SerializeField] Color color;
+    [SerializeField] Transform root;
     float speed = 1;
     float stepDistance = 4;
     float stepLength = 1;
@@ -26,7 +26,6 @@ public class IKFootSolver : MonoBehaviour
         lerp = 1;
     }
 
-    // Update is called once per frame
 
     void FixedUpdate()
     {
@@ -36,7 +35,7 @@ public class IKFootSolver : MonoBehaviour
         stepDistance = properties.stepDistance;
         stepHeight = properties.stepHeight;
         stepLength = properties.stepLength;
-
+        transform.rotation = root.rotation;
         Ray ray = new Ray(body.position, Vector3.down);
 
         if (Physics.Raycast(ray, out RaycastHit info, 100, terrainLayer.value))
@@ -44,12 +43,9 @@ public class IKFootSolver : MonoBehaviour
             if (Vector3.Distance(newPosition, info.point) > stepDistance && !otherFoot.IsMoving() && lerp >= 1)
             {
                 Vector3 directionStep = (info.point - currentPosition).normalized;
-
-
                 lerp = 0;
-                int direction = body.InverseTransformPoint(info.point).z > body.InverseTransformPoint(newPosition).z ? 1 : -1;
+                // int direction = body.InverseTransformPoint(info.point).z > body.InverseTransformPoint(newPosition).z ? 1 : -1;
                 newPosition = info.point + (directionStep * stepLength);
-                Debug.Log($"Posicion paso{transform.name}, {newPosition}");
                 newNormal = info.normal;
             }
         }
@@ -70,11 +66,11 @@ public class IKFootSolver : MonoBehaviour
         }
     }
 
-    void OnDrawGizmos()
+    /*void OnDrawGizmos()
     {
         Gizmos.color = color;
         Gizmos.DrawSphere(newPosition, 1f);
-    }
+    }*/
 
 
 
@@ -87,7 +83,3 @@ public class IKFootSolver : MonoBehaviour
 
 }
 
-public class test : MonoBehaviour
-{
-    // string s = 
-}
