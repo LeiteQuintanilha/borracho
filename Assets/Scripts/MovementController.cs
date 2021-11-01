@@ -4,54 +4,48 @@ using UnityEngine;
 
 public class MovementController : MonoBehaviour
 {
-    [SerializeField] ConstantForce torqueForce;
     [SerializeField] CharacterProperties properties;
-    [SerializeField] Transform rayMove;
-    [SerializeField] LayerMask mask = default;
-    [SerializeField] Rigidbody rb;
-    [SerializeField] AcelerationController aceleration;
+    [SerializeField] ConstantForce constForce;
     float distanceToTwist;
     float twistVelocity;
-    Vector3 infoPoint;
     private Quaternion oldRotation;
     private Quaternion newRotation;
     private float lerp;
     private Quaternion currentRotation;
+    private Vector3 aceleration;
+    private float acelerationMagnitude;
 
     void Start()
     {
         lerp = 1;
-        currentRotation=newRotation = oldRotation = transform.rotation;
+        currentRotation = newRotation = oldRotation = transform.rotation;
     }
 
 
     void FixedUpdate()
     {
-        var horizontal = Input.GetAxis("Horizontal");
-        var vertical = Input.GetAxis("Vertical");
+        //var horizontal = Input.GetAxis("Horizontal");
+        //var vertical = Input.GetAxis("Vertical");
+        aceleration = properties.acelerationSensor;
+        acelerationMagnitude = aceleration.magnitude;
         twistVelocity = properties.TwistVelocity;
         distanceToTwist = properties.DistanceToTwist;
         transform.rotation = currentRotation;
-        transform.Translate(aceleration.Aceleration * Time.deltaTime * properties.velocity, Space.World);
 
-        //torqueForce.force = new Vector3(aceleration.Aceleration.x * properties.forceFactor,
-        //                                0,
-        //                                aceleration.Aceleration.z * properties.forceFactor);
+        constForce.force = aceleration * properties.forceFactor;
+        transform.Translate(aceleration * Time.deltaTime * properties.velocity, Space.World);
 
-        
-        if (lerp >= 1 && aceleration.Aceleration.magnitude > distanceToTwist)
+        if (lerp >= 1 && aceleration.magnitude > distanceToTwist)
         {
             oldRotation = newRotation;
-
-            Vector3 direction = aceleration.Aceleration;
+            Vector3 direction = aceleration;
             direction.y = 0;
-            //newRotation.SetFromToRotation(transform.forward, (direction *10).normalized);
             newRotation = Quaternion.LookRotation(direction);
 
-            Vector3 actual = transform.rotation.eulerAngles;
+            //Vector3 actual = transform.rotation.eulerAngles;
             Vector3 futura = newRotation.eulerAngles;
-            Debug.Log($"direction{direction}/actual{actual}/future{futura}");
-
+            futura.x = 0;
+            futura.z = 0;
             lerp = 0;
         }
         else if (lerp < 1)

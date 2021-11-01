@@ -10,6 +10,7 @@ public class IKFootSolver : MonoBehaviour
     [SerializeField] CharacterProperties properties;
     [SerializeField] Color color;
     [SerializeField] Transform root;
+    [SerializeField] AcelerationController acelerationConroller;
     float speed = 1;
     float stepDistance = 4;
     float stepLength = 1;
@@ -31,11 +32,12 @@ public class IKFootSolver : MonoBehaviour
     {
         transform.position = currentPosition;
         transform.up = currentNormal;
-        speed = properties.footVelocity;
+        speed = properties.footVelocity + acelerationConroller.Aceleration.magnitude;
         stepDistance = properties.stepDistance;
         stepHeight = properties.stepHeight;
-        stepLength = properties.stepLength;
+        stepLength = properties.stepLength + (acelerationConroller.Aceleration.magnitude * 5);
         transform.rotation = root.rotation;
+
         Ray ray = new Ray(body.position, Vector3.down);
 
         if (Physics.Raycast(ray, out RaycastHit info, 100, terrainLayer.value))

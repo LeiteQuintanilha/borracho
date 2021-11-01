@@ -7,6 +7,8 @@ public class AcelerationController : MonoBehaviour
 
     [SerializeField]
     private Vector3 aceleration;
+    [SerializeField]
+    private CharacterProperties properties;
 
     public Vector3 Aceleration
     {
@@ -24,5 +26,6 @@ public class AcelerationController : MonoBehaviour
     {
         aceleration.x = Input.acceleration.x;
         aceleration.z = Input.acceleration.y;
+        properties.acelerationSensor = aceleration;
     }
 }
